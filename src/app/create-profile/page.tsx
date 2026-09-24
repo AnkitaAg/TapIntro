@@ -82,44 +82,50 @@ export default function CreateProfile() {
   }
 }
 
-    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) 
+  {
     event.preventDefault();
+
+    const cleanUsername = username.trim().toLowerCase();
+    const {
+            data: { user },
+          } = await supabase.auth.getUser();
+
+    console.log("Authenticated user ID:", user?.id);
+
+    if (!user)
+     {
+      alert("You must be logged in to create a profile.");
+      return;
+      }
     
     let photoUrl = "";
 
-if (photo) {
-  const filePath = `${user.id}/profile.jpg`;
+    if (photo) 
+    {
+      const filePath = `${user.id}/profile.jpg`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("profile-photos")
-    .upload(filePath, photo, {
+      const { error: uploadError } = await supabase.storage
+      .from("profile-photos")
+      .upload(filePath, photo, {
       cacheControl: "3600",
       upsert: true,
     });
 
-  if (uploadError) {
-    console.error("Photo upload error:", uploadError);
-    alert(uploadError.message);
-    return;
-  }
+      if (uploadError)
+      {
+        console.error("Photo upload error:", uploadError);
+        alert(uploadError.message);
+        return;
+      }
 
-  const { data: publicUrlData } = supabase.storage
-    .from("profile-photos")
-    .getPublicUrl(filePath);
+      const { data: publicUrlData } = supabase.storage
+        .from("profile-photos")
+        .getPublicUrl(filePath);
 
-  photoUrl = publicUrlData.publicUrl;
-}
-    const cleanUsername = username.trim().toLowerCase();
-    const {
-  data: { user },
-} = await supabase.auth.getUser();
-
-  console.log("Authenticated user ID:", user?.id);
-
-    if (!user) {
-    alert("You must be logged in to create a profile.");
-    return;
-  }
+        photoUrl = publicUrlData.publicUrl;
+    }
+    
 
    const { data, error } = await supabase
   .from("profiles")
