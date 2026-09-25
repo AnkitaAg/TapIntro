@@ -14,34 +14,29 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
 
   async function handleSignup(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  event.preventDefault();
 
-    setError("");
-    setMessage("");
-    setLoading(true);
+  setError("");
+  setMessage("");
+  setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+  const { error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-      return;
-    }
-
-    setMessage(
-      "Account created! Check your email if confirmation is required."
-    );
-
+  if (error) {
+    setError(error.message);
     setLoading(false);
-
-    setTimeout(() => {
-      router.push("/create-profile");
-    }, 1500);
+    return;
   }
 
+  setMessage(
+    "Account created! Please check your email to confirm your account. Once confirmed, sign in to create your TapIntro profile."
+  );
+
+  setLoading(false);
+}
   return (
     <main className="min-h-screen bg-white text-gray-900">
       <div className="mx-auto max-w-md px-6 py-20">
@@ -111,10 +106,10 @@ export default function SignupPage() {
         </form>
 
         <p className="mt-8 text-sm text-gray-500">
-          Already have an account?{" "}
-          <a href="/login" className="font-medium underline">
-            Sign in
-          </a>
+            Already have an account?{" "}
+            <a href="/login" className="font-medium underline">
+                Log in
+            </a>
         </p>
       </div>
     </main>

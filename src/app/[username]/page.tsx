@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import { FaGithub, FaLinkedin, FaPhone } from "react-icons/fa";
 import { getCompanyLogoUrl } from "@/lib/companyLogo";
+import LogoutButton from "@/components/LogoutButton";
 
 type Profile = {
   username: string;
@@ -214,9 +215,15 @@ const companyInitials = p.organization
           </div>
         </div>
 
-        <p className="mt-6 text-center text-xs text-gray-400">
-          TapIntro
-        </p>
+        <div className="mt-6 text-center">
+            <p className="text-xs text-gray-400">
+                TapIntro
+            </p>
+
+            <div className="mt-3">
+                <LogoutButton />
+            </div>
+        </div>
       </div>
     </main>
   );

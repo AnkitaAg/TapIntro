@@ -1,11 +1,40 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react"; 
 import { useRouter } from "next/navigation";  
 import { supabase } from "@/lib/supabase";
 
 export default function CreateProfile() {
   const router = useRouter();
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+useEffect(() => {
+  async function checkAuth() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("username")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (existingProfile?.username) {
+      router.replace(`/${existingProfile.username}`);
+      return;
+    }
+
+    setCheckingAuth(false);
+  }
+
+  checkAuth();
+}, [router]);
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
@@ -153,6 +182,16 @@ export default function CreateProfile() {
   console.log("Profile created:", data);
     router.push(`/${cleanUsername}`);
   }
+
+  if (checkingAuth) {
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-white">
+      <p className="text-gray-500">Loading...</p>
+    </main>
+  );
+}
+
+
   return (
     <main className="min-h-screen bg-white text-gray-900">
       <div className="mx-auto max-w-2xl px-6 py-12">
@@ -184,7 +223,7 @@ export default function CreateProfile() {
       id="username"
       name="username"
       type="text"
-      placeholder="ankita"
+      required
       value={username}
       onChange={(e) => setUsername(e.target.value)}
       className="w-full rounded-lg px-2 py-3 outline-none"
@@ -203,6 +242,7 @@ export default function CreateProfile() {
               id="name"
               name="name"
               type="text"
+              required
               placeholder="e.g. Ankita Agrawal"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -321,11 +361,11 @@ export default function CreateProfile() {
 {/* LinkedIn */}
 <div>
   <label
-    htmlFor="linkedin"
-    className="block text-sm font-medium"
-  >
-    LinkedIn
-  </label>
+  htmlFor="linkedin"
+  className="block text-sm font-medium"
+>
+  LinkedIn <span className="font-normal text-gray-400">(optional)</span>
+</label>
 
   <input
     id="linkedin"
@@ -341,11 +381,11 @@ export default function CreateProfile() {
 {/* GitHub */}
 <div>
   <label
-    htmlFor="github"
-    className="block text-sm font-medium"
+  htmlFor="github"
+  className="block text-sm font-medium"
   >
-    GitHub
-  </label>
+  GitHub <span className="font-normal text-gray-400">(optional)</span>
+</label>
 
   <input
     id="github"

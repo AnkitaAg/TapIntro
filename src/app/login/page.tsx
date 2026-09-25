@@ -121,7 +121,10 @@ if (profile) {
         </form>
 
         <p className="mt-8 text-sm text-gray-500">
-          Don't have an account yet? We'll add sign-up next.
+            Don't have an account?{" "}
+            <a href="/signup" className="font-medium underline">
+                Create an account
+            </a>
         </p>
       </div>
     </main>
